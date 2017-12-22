@@ -1,0 +1,33 @@
+version: '3'
+
+services:
+    server:
+        build: ./nginx
+        ports:
+            - 8080:80
+        links:
+            - app
+    app:
+        volumes:
+            - ../code/:/var/www
+        build: ./php-fpm
+        working_dir: /var/www
+        links:
+            - database
+            - cache
+        environment:
+            - DB_HOST=database
+            - REDIS_HOST=cache
+    
+    database:
+        image: mysql
+        ports:
+            - 33061:3306
+        environment:
+            - MYSQL_ROOT_PASSWORD=secret
+            - MYSQL_DATABASE=homestead
+    cache:
+        image: redis:3.0
+        ports:
+            - 63791:6379
+            
